@@ -1,14 +1,13 @@
 package com.jmp.matrizes;
 
-import android.content.Context;
-import android.util.Log;
-import android.widget.Toast;
+import android.app.Activity;
+import android.support.design.widget.Snackbar;
+import android.view.View;
 
 class FormulaSolver {
 
     private String formula = "";
     private String character = "";
-    private String nextCharacter = "";
     private String operator = "";
     private String auxOperator = "";
 
@@ -19,9 +18,11 @@ class FormulaSolver {
         this.formula = formula;
     }
 
-    Integer solve(int a, int b, boolean isTranspose, Context context){
+    Integer solve(int a, int b, boolean isTranspose, Activity activity){
         int sum = 0;
         boolean shouldAppend;
+        String nextCharacter = "";
+        int result;
         int number0 = 0;
         int number1 = 1;
         int number2 = 1;
@@ -31,8 +32,15 @@ class FormulaSolver {
                 try {
                     nextCharacter = String.valueOf(formula.charAt(i + 1));
                 }catch (Exception e){
+                    nextCharacter = "";
                 }
-                int result = Integer.valueOf(character);
+                if(isNumber(nextCharacter)){
+                    result = Integer.valueOf(character+ nextCharacter);
+                }else {
+                    result = Integer.valueOf(character);
+                }
+                View view = activity.getWindow().getDecorView().findViewById(android.R.id.content);
+                Snackbar.make(view,result+"",Snackbar.LENGTH_LONG).show();
                 if(isAuxNumber(i)){
                     number0 = result;
                 }else if(nextCharacter.equals("i")){
@@ -40,6 +48,7 @@ class FormulaSolver {
                 }else if(nextCharacter.equals("j")){
                     number2 = result;
                 }
+
             }else if(isOperator(character)){
                 operator = character;
             }
@@ -50,6 +59,9 @@ class FormulaSolver {
             a = b;
             b = aAux;
         }
+
+        View view = activity.getWindow().getDecorView().findViewById(android.R.id.content);
+        Snackbar.make(view,"Number 0: "+number0+ " | Number 1: "+number1+"| Number 2: "+number2,Snackbar.LENGTH_LONG).show();
 
         if(isPlusSignal(operator)){
             sum = number1*a + number2*b;
@@ -79,9 +91,8 @@ class FormulaSolver {
         return code > 47 && code < 58;
     }
 
-    private boolean isNumber(String nextCharacter,Context context){
+    private boolean isNumber(String nextCharacter){
         Integer code = (int) nextCharacter.charAt(0);
-        Toast.makeText(context, code.toString(), Toast.LENGTH_SHORT).show();
         return code > 47 && code < 58;
     }
 
@@ -101,7 +112,7 @@ class FormulaSolver {
         }else
             return false;
     }
-    
+
     private boolean isOperator(String character){
         return character.equals("+") || character.equals("-") || character.equals("*") || character.equals("/");
     }
